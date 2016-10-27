@@ -1,0 +1,33 @@
+diff --git a/build/toolchain/gcc_toolchain.gni b/build/toolchain/gcc_toolchain.gni
+index eecb409..61b9bee 100644
+--- a/build/toolchain/gcc_toolchain.gni
++++ b/build/toolchain/gcc_toolchain.gni
+@@ -452,10 +452,16 @@ template("clang_toolchain") {
+     toolprefix = ""
+   }
+ 
+   gcc_toolchain(target_name) {
+-    prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+-    cc = "$prefix/clang"
+-    cxx = "$prefix/clang++"
++    if (is_clang) {
++      prefix = rebase_path("$clang_base_path/bin", root_build_dir)
++      cc = "$prefix/clang"
++      cxx = "$prefix/clang++"
++    } else {
++      cc = getenv("CC")
++      cxx = getenv("CXX")
++    }
++
+     ld = cxx
+ 
+     readelf = "${toolprefix}readelf"
+@@ -468,7 +478,7 @@ template("clang_toolchain") {
+       if (defined(invoker.toolchain_args)) {
+         forward_variables_from(invoker.toolchain_args, "*")
+       }
+-      is_clang = true
++      is_clang = is_clang
+     }
+   }
+ }
